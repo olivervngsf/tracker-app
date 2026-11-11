@@ -13,7 +13,11 @@ struct TrackerSnapshot: Identifiable {
     /// Row text on the medium widget: "1 of 3".
     let rowText: String
     let doneToday: Bool
+    /// 0...1 toward today's goal (number trackers with a target only).
+    let progressToday: Double
     let week: [DotState]
+    /// 0...1 toward the goal for each day in `week`.
+    let weekProgress: [Double]
     let year: [DotState]
     let yearDone: Int
 
@@ -25,7 +29,9 @@ struct TrackerSnapshot: Identifiable {
         caption: "gym this week",
         rowText: "1 of 3",
         doneToday: false,
+        progressToday: 0,
         week: [.done, .open, .todayOpen, .future, .future, .future, .future],
+        weekProgress: Array(repeating: 0, count: 7),
         year: (0..<365).map { (index: Int) -> DotState in
             if index >= 200 { return .future }
             return index % 3 == 0 ? .done : .open
@@ -94,7 +100,9 @@ enum SnapshotBuilder {
             caption: caption,
             rowText: rowText,
             doneToday: doneToday,
+            progressToday: tracker.progress(values[today]),
             week: tracker.states(for: weekDays, values: values, today: today),
+            weekProgress: weekDays.map { tracker.progress(values[$0]) },
             year: tracker.states(for: yearDays, values: values, today: today),
             yearDone: tracker.doneCount(in: yearDays, values: values)
         )

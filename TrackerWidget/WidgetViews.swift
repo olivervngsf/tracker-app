@@ -43,12 +43,12 @@ struct SmallView: View {
                     .contentTransition(.numericText())
                 Spacer(minLength: 6)
                 Button(intent: LogIntent(trackerID: snapshot.id)) {
-                    QuickGlyph(kind: snapshot.kind, done: snapshot.doneToday, size: 40, highlight: true)
+                    QuickGlyph(kind: snapshot.kind, done: snapshot.doneToday, size: 40, highlight: true, progress: snapshot.progressToday)
                 }
                 .buttonStyle(.plain)
             }
             Spacer(minLength: 0)
-            DotRow(states: snapshot.week, size: 14)
+            DotRow(states: snapshot.week, progress: snapshot.weekProgress, size: 14)
             Spacer(minLength: 0)
             Text(snapshot.caption)
                 .font(.system(size: 12, design: .monospaced))
@@ -123,7 +123,7 @@ struct TodayWidgetView: View {
                             .lineLimit(1)
                             .contentTransition(.numericText())
                         Button(intent: LogIntent(trackerID: snapshot.id)) {
-                            QuickGlyph(kind: snapshot.kind, done: snapshot.doneToday, size: 40, highlight: true)
+                            QuickGlyph(kind: snapshot.kind, done: snapshot.doneToday, size: 40, highlight: true, progress: snapshot.progressToday)
                         }
                         .buttonStyle(.plain)
                     }
@@ -145,7 +145,7 @@ struct RectangularView: View {
                 Spacer()
                 Text(snapshot.headline).font(.system(size: 15, weight: .semibold))
             }
-            DotRow(states: snapshot.week, size: 15)
+            DotRow(states: snapshot.week, progress: snapshot.weekProgress, size: 15)
         }
     }
 }
@@ -174,12 +174,14 @@ struct CircularView: View {
 
 struct DotRow: View {
     let states: [DotState]
+    /// Optional 0...1 per day, matched to `states` by position.
+    var progress: [Double] = []
     let size: CGFloat
 
     var body: some View {
         HStack(spacing: 0) {
             ForEach(Array(states.enumerated()), id: \.offset) { index, state in
-                DotView(state: state, size: size)
+                DotView(state: state, size: size, progress: index < progress.count ? progress[index] : 0)
                 if index < states.count - 1 { Spacer(minLength: 0) }
             }
         }
