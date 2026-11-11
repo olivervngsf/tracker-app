@@ -51,8 +51,13 @@ struct RootView: View {
             palette.paper.ignoresSafeArea()
 
             GeometryReader { geo in
-                if geo.size.width >= 580 {
-                    wide
+                // Wide and tall enough = iPhone Duo open (or a tablet). Anything else is a normal phone.
+                if geo.size.width >= 580 && geo.size.height >= 480 {
+                    if geo.size.width > geo.size.height {
+                        sideways(geo.size)
+                    } else {
+                        wide
+                    }
                 } else {
                     compact
                 }
@@ -150,6 +155,22 @@ struct RootView: View {
             )
             .frame(maxWidth: .infinity)
         }
+        .id(refreshToken)
+    }
+
+    /// iPhone Duo open and turned sideways: overview above the fold, tracker cards below.
+    private func sideways(_ size: CGSize) -> some View {
+        SidewaysView(
+            trackers: trackers,
+            tracker: selected,
+            today: today,
+            size: size,
+            onSelect: { tracker in
+                withAnimation(.snappy(duration: 0.25)) { selectedID = tracker.uuid }
+            },
+            onOpen: { tracker, day in sheet = .log(tracker, day) },
+            onNew: { sheet = .new }
+        )
         .id(refreshToken)
     }
 

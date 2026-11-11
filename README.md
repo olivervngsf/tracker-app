@@ -42,6 +42,7 @@ To change which tracker a widget shows: long-press the widget → **Edit Widget*
 - **Fix a past day**: tap that day's dot in Week or Month.
 - **New tracker**: bottom of the Day screen.
 - **iPhone Duo, open** (or any wide screen): trackers on the left, the selected tracker's week, month and year on the right. Tap a name to select it; tap a dot to log that day.
+- **iPhone Duo, open and sideways**: date, this week and the year on top; tracker cards with big tap circles below the fold. Normal phones stay upright.
 - **Edit or delete**: tap a tracker's name → **Edit tracker**.
 
 The app starts with five example trackers (Gym, Water, Steps, Calories, Spent). Change or delete them freely.
