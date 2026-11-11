@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 /// One day. Filled = done, ring = not done, orange = today, faint ring = coming up.
 /// A number tracker part way to its goal draws a partial ring over a faint one.
@@ -9,6 +10,7 @@ struct DotView: View {
     var progress: Double = 0
 
     @Environment(\.palette) private var palette
+    @Environment(\.widgetRenderingMode) private var renderingMode
 
     private var isFilled: Bool { state == .done || state == .todayDone }
     private var isToday: Bool { state == .todayOpen || state == .todayDone }
@@ -21,6 +23,14 @@ struct DotView: View {
         return state == .future ? palette.future : palette.ring
     }
 
+    /// Home screen widgets (accented / vibrant) repaint every color white and keep only transparency,
+    /// so soft rings are made see-through there instead of grey.
+    private var ringOpacity: Double {
+        guard renderingMode != .fullColor, !isToday || showsProgress else { return 1 }
+        if showsProgress || state == .future { return 0.25 }
+        return state == .open ? 0.5 : 1
+    }
+
     private var ringWidth: CGFloat {
         let base = max(1.5, size * 0.045)
         return state == .todayOpen ? base * 1.5 : base
@@ -29,6 +39,7 @@ struct DotView: View {
     var body: some View {
         ZStack {
             Circle().strokeBorder(ringColor, lineWidth: ringWidth)
+                .opacity(ringOpacity)
             ProgressArc(progress: showsProgress ? progress : 0, lineWidth: ringWidth)
                 .foregroundStyle(isToday ? palette.accent : palette.dot)
             Circle()
@@ -68,6 +79,7 @@ struct QuickGlyph: View {
     var progress: Double = 0
 
     @Environment(\.palette) private var palette
+    @Environment(\.widgetRenderingMode) private var renderingMode
 
     private var symbol: String {
         if done { return "checkmark" }
@@ -81,6 +93,8 @@ struct QuickGlyph: View {
     var body: some View {
         ZStack {
             Circle().strokeBorder(showsProgress ? palette.faint : ringColor, lineWidth: ringWidth)
+                // On the home screen every color turns white, so the unfilled part is made see-through instead.
+                .opacity(showsProgress && renderingMode != .fullColor ? 0.3 : 1)
             // Slightly thicker than the base ring so progress reads at a glance.
             ProgressArc(progress: showsProgress ? progress : 0, lineWidth: ringWidth + 1)
                 .foregroundStyle(ringColor)
