@@ -5,6 +5,9 @@ import SwiftData
 struct DayView: View {
     let trackers: [Tracker]
     let today: Date
+    var selectedID: UUID? = nil
+    /// Wide layout: tapping a name selects the tracker for the review pane.
+    var showsSelection = false
     var onOpen: (Tracker) -> Void
     var onNew: () -> Void
 
@@ -26,7 +29,12 @@ struct DayView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(trackers) { tracker in
-                        TrackerRow(tracker: tracker, today: today, onOpen: { onOpen(tracker) })
+                        TrackerRow(
+                            tracker: tracker,
+                            today: today,
+                            marker: showsSelection ? tracker.uuid == selectedID : nil,
+                            onOpen: { onOpen(tracker) }
+                        )
                     }
                     Rectangle().fill(palette.line).frame(height: 1)
                 }
@@ -50,6 +58,8 @@ struct DayView: View {
 struct TrackerRow: View {
     let tracker: Tracker
     let today: Date
+    /// nil = no marker column. true / false = selected or not (wide layout).
+    var marker: Bool? = nil
     var onOpen: () -> Void
 
     @Environment(\.modelContext) private var context
@@ -66,8 +76,15 @@ struct TrackerRow: View {
             HStack(spacing: 12) {
                 Button(action: onOpen) {
                     HStack(spacing: 12) {
+                        if let marker {
+                            Circle()
+                                .fill(palette.ink)
+                                .frame(width: 6, height: 6)
+                                .opacity(marker ? 1 : 0)
+                                .animation(.dot, value: marker)
+                        }
                         Text(tracker.name)
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 18, weight: marker == true ? .semibold : .medium))
                             .foregroundStyle(palette.ink)
                             .lineLimit(1)
                         Spacer(minLength: 8)

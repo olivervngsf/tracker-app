@@ -73,4 +73,16 @@ extension Tracker {
             return text.trimmingCharacters(in: .whitespaces)
         }
     }
+
+    /// "3 times a week" or "2.5 L a day".
+    var goalText: String {
+        switch kind {
+        case .check:
+            let count = Int(goal)
+            return "\(count) \(count == 1 ? "time" : "times") \(period.label)"
+        case .number:
+            let amount = "\(formatAmount(goal)) \(unit)".trimmingCharacters(in: .whitespaces)
+            return isLimit ? "under \(amount) a day" : "\(amount) a day"
+        }
+    }
 }

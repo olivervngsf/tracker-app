@@ -76,7 +76,7 @@ struct MonthView: View {
 
             Spacer(minLength: 0)
 
-            Caption(text: goalText(tracker))
+            Caption(text: "Goal · \(tracker.goalText)")
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
         }
@@ -99,15 +99,5 @@ struct MonthView: View {
     private func shift(_ months: Int) {
         guard let next = Calendar.current.date(byAdding: .month, value: months, to: anchor) else { return }
         withAnimation(.easeInOut(duration: 0.25)) { anchor = next }
-    }
-
-    private func goalText(_ tracker: Tracker) -> String {
-        switch tracker.kind {
-        case .check:
-            return "Goal · \(Int(tracker.goal)) times \(tracker.period.label)"
-        case .number:
-            let prefix = tracker.isLimit ? "Limit" : "Goal"
-            return "\(prefix) · \(formatAmount(tracker.goal)) \(tracker.unit) a day"
-        }
     }
 }

@@ -50,45 +50,12 @@ struct RootView: View {
         ZStack {
             palette.paper.ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 0) {
-                SpanTabs(span: $span)
-                    .padding(.horizontal, 24)
-
-                TabView(selection: $span) {
-                    DayView(
-                        trackers: trackers,
-                        today: today,
-                        onOpen: { sheet = .log($0, today) },
-                        onNew: { sheet = .new }
-                    )
-                    .tag(Span.day)
-
-                    WeekView(
-                        trackers: trackers,
-                        today: today,
-                        onOpen: { tracker, day in sheet = .log(tracker, day) }
-                    )
-                    .tag(Span.week)
-
-                    MonthView(
-                        trackers: trackers,
-                        tracker: selected,
-                        today: today,
-                        onSelect: { selectedID = $0.uuid },
-                        onOpen: { tracker, day in sheet = .log(tracker, day) }
-                    )
-                    .tag(Span.month)
-
-                    YearView(
-                        trackers: trackers,
-                        tracker: selected,
-                        today: today,
-                        onSelect: { selectedID = $0.uuid }
-                    )
-                    .tag(Span.year)
+            GeometryReader { geo in
+                if geo.size.width >= 580 {
+                    wide
+                } else {
+                    compact
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .id(refreshToken)
             }
         }
         .environment(\.palette, palette)
@@ -107,6 +74,83 @@ struct RootView: View {
                 refreshToken += 1
             }
         }
+    }
+
+    /// Phone, or iPhone Duo closed: one screen at a time.
+    private var compact: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SpanTabs(span: $span)
+                .padding(.horizontal, 24)
+
+            TabView(selection: $span) {
+                DayView(
+                    trackers: trackers,
+                    today: today,
+                    onOpen: { sheet = .log($0, today) },
+                    onNew: { sheet = .new }
+                )
+                .tag(Span.day)
+
+                WeekView(
+                    trackers: trackers,
+                    today: today,
+                    onOpen: { tracker, day in sheet = .log(tracker, day) }
+                )
+                .tag(Span.week)
+
+                MonthView(
+                    trackers: trackers,
+                    tracker: selected,
+                    today: today,
+                    onSelect: { selectedID = $0.uuid },
+                    onOpen: { tracker, day in sheet = .log(tracker, day) }
+                )
+                .tag(Span.month)
+
+                YearView(
+                    trackers: trackers,
+                    tracker: selected,
+                    today: today,
+                    onSelect: { selectedID = $0.uuid }
+                )
+                .tag(Span.year)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .id(refreshToken)
+        }
+    }
+
+    /// iPhone Duo open (or any wide screen): log on the left, review on the right.
+    private var wide: some View {
+        HStack(alignment: .top, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Today")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(palette.ink)
+                    .frame(height: 44)
+                    .padding(.horizontal, 24)
+
+                DayView(
+                    trackers: trackers,
+                    today: today,
+                    selectedID: selected?.uuid,
+                    showsSelection: true,
+                    onOpen: { tracker in
+                        withAnimation(.snappy(duration: 0.25)) { selectedID = tracker.uuid }
+                    },
+                    onNew: { sheet = .new }
+                )
+            }
+            .frame(maxWidth: .infinity)
+
+            ReviewPane(
+                tracker: selected,
+                today: today,
+                onOpen: { tracker, day in sheet = .log(tracker, day) }
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .id(refreshToken)
     }
 
     @ViewBuilder
