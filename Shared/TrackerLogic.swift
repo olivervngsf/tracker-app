@@ -41,6 +41,12 @@ extension Tracker {
         }
     }
 
+    /// How far a day is toward its goal, 0...1. Only number trackers with a target (not a limit) fill partly.
+    func progress(_ value: Double?) -> Double {
+        guard kind == .number, !isLimit, goal > 0, let value else { return 0 }
+        return min(max(value / goal, 0), 1)
+    }
+
     func state(for day: Date, values: [Date: Double], today: Date) -> DotState {
         let done = isDone(values[day])
         if day == today { return done ? .todayDone : .todayOpen }

@@ -107,7 +107,11 @@ struct ReviewPane: View {
         Button {
             if day <= today { onOpen(tracker, day) }
         } label: {
-            DotView(state: tracker.state(for: day, values: values, today: today), size: size)
+            DotView(
+                state: tracker.state(for: day, values: values, today: today),
+                size: size,
+                progress: tracker.progress(values[day])
+            )
         }
         .buttonStyle(PressScale())
         .disabled(day > today)

@@ -103,7 +103,7 @@ struct TrackerRow: View {
                 Button {
                     Store.quickLog(tracker, in: context)
                 } label: {
-                    QuickGlyph(kind: tracker.kind, done: done)
+                    QuickGlyph(kind: tracker.kind, done: done, progress: tracker.progress(values[today]))
                 }
                 .buttonStyle(PressScale())
                 .sensoryFeedback(.impact(weight: .medium), trigger: values[today])
