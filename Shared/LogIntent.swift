@@ -17,9 +17,11 @@ struct LogIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let context = ModelContext(Store.container)
+        // Fresh connection, so the toggle is based on what is really saved right now.
+        let context = Store.freshContext()
         if let tracker = Store.tracker(withID: trackerID, in: context) {
             Store.quickLog(tracker, in: context)
+            Store.markExternalChange()
         }
         return .result()
     }

@@ -89,11 +89,15 @@ struct QuickGlyph: View {
                 .scaleEffect(done ? 1 : 0.001)
                 .opacity(done ? 1 : 0)
             if !symbol.isEmpty {
+                // Done: the check is punched out of the filled circle, so it stays visible
+                // when the home screen recolors widgets (tinted or monochrome).
                 Image(systemName: symbol)
                     .font(.system(size: size * 0.4, weight: .bold))
-                    .foregroundStyle(done ? palette.paper : palette.ink)
+                    .foregroundStyle(palette.ink)
+                    .blendMode(done ? .destinationOut : .normal)
             }
         }
+        .compositingGroup()
         .frame(width: size, height: size)
         .contentShape(Circle())
         .animation(.dot, value: done)

@@ -43,7 +43,7 @@ struct TrackerSnapshot: Identifiable {
 enum SnapshotBuilder {
     @MainActor
     static func all() -> [TrackerSnapshot] {
-        let context = ModelContext(Store.container)
+        let context = Store.freshContext()
         return Store.allTrackers(in: context)
             .filter { $0.showOnWidget }
             .map { make($0) }

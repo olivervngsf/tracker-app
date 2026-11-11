@@ -20,7 +20,25 @@ enum Store {
 
     static let container: ModelContainer = makeContainer()
 
-    private static func makeContainer() -> ModelContainer {
+    /// A brand-new connection to the saved data.
+    /// The app and the widget are separate programs; one long-lived connection can keep showing
+    /// old values after the other one saves, so anything that must be current opens a fresh one.
+    static func freshContext() -> ModelContext {
+        ModelContext(makeContainer())
+    }
+
+    private static let changeKey = "externalChangeAt"
+
+    /// When a widget last changed the data. The app compares this when it comes back to the front.
+    static var externalChangeStamp: Double {
+        UserDefaults(suiteName: appGroupID)?.double(forKey: changeKey) ?? 0
+    }
+
+    static func markExternalChange() {
+        UserDefaults(suiteName: appGroupID)?.set(Date().timeIntervalSince1970, forKey: changeKey)
+    }
+
+    static func makeContainer() -> ModelContainer {
         let schema = Schema([Tracker.self, Entry.self])
 
         if hasSharedContainer {

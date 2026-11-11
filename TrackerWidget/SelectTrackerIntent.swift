@@ -33,7 +33,7 @@ struct TrackerEntityQuery: EntityQuery {
 
     @MainActor
     private func loadAll() -> [TrackerEntity] {
-        let context = ModelContext(Store.container)
+        let context = Store.freshContext()
         return Store.allTrackers(in: context).map {
             TrackerEntity(id: $0.uuid.uuidString, name: $0.name)
         }
