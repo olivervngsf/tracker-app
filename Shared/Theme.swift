@@ -8,6 +8,12 @@ struct Palette {
     let faint: Color
     let line: Color
     let accent: Color
+    /// Softer than ink, so a screen full of dots is easy on the eyes.
+    let dot: Color
+    /// Open (not done) days.
+    let ring: Color
+    /// Days that have not happened yet.
+    let future: Color
 
     static let light = Palette(
         paper: Color(hex: 0xE8E6E1),
@@ -15,7 +21,10 @@ struct Palette {
         muted: Color(hex: 0x5F5D58),
         faint: Color(hex: 0xC9C6BF),
         line: Color(hex: 0xCFCCC5),
-        accent: Color(hex: 0xE0703A)
+        accent: Color(hex: 0xE0703A),
+        dot: Color(hex: 0x33322F),
+        ring: Color(hex: 0xA8A59E),
+        future: Color(hex: 0xD8D5CE)
     )
 
     static let dark = Palette(
@@ -24,7 +33,10 @@ struct Palette {
         muted: Color(hex: 0xB4B4B4),
         faint: Color(hex: 0x4A4A4A),
         line: Color(hex: 0x2C2C2C),
-        accent: Color(hex: 0xE0703A)
+        accent: Color(hex: 0xE0703A),
+        dot: Color(hex: 0xE8E6E1),
+        ring: Color(hex: 0x8C8C8C),
+        future: Color(hex: 0x3A3A3A)
     )
 
     static func of(_ scheme: ColorScheme) -> Palette {

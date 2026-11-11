@@ -12,11 +12,12 @@ struct DotView: View {
 
     private var ringColor: Color {
         if isToday { return palette.accent }
-        return state == .future ? palette.faint : palette.ink
+        if state == .done { return palette.dot }
+        return state == .future ? palette.future : palette.ring
     }
 
     private var ringWidth: CGFloat {
-        let base = max(1.5, size * 0.055)
+        let base = max(1.5, size * 0.045)
         return state == .todayOpen ? base * 1.5 : base
     }
 
@@ -24,7 +25,7 @@ struct DotView: View {
         ZStack {
             Circle().strokeBorder(ringColor, lineWidth: ringWidth)
             Circle()
-                .fill(isToday ? palette.accent : palette.ink)
+                .fill(isToday ? palette.accent : palette.dot)
                 .scaleEffect(isFilled ? 1 : 0.001)
                 .opacity(isFilled ? 1 : 0)
         }
